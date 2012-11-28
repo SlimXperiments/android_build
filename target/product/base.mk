@@ -49,7 +49,6 @@ PRODUCT_PACKAGES += \
     libeffects \
     libinput \
     libiprouteutil \
-    libjni_latinime \
     libjnigraphics \
     libldnhncr \
     libmedia \

@@ -56,7 +56,7 @@ $(common_javalib.jar) : $(full_classes_proguard_jar)
 else
 $(common_javalib.jar) : $(full_classes_jar)
 endif
-	@echo "target Static Jar: $(PRIVATE_MODULE) ($@)"
+	@echo -e ${CL_GRN}"target Static Jar:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
 	$(copy-file-to-target)
 ifneq ($(extra_jar_args),)
 	$(add-java-resources-to-package)
@@ -69,7 +69,7 @@ else # !LOCAL_IS_STATIC_JAVA_LIBRARY
 
 $(common_javalib.jar): PRIVATE_DEX_FILE := $(built_dex)
 $(common_javalib.jar) : $(built_dex) $(java_resource_sources)
-	@echo "target Jar: $(PRIVATE_MODULE) ($@)"
+	@echo -e ${CL_GRN}"target Jar:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
 	$(create-empty-package)
 	$(add-dex-to-package)
 	$(add-carried-java-resources)
@@ -100,7 +100,7 @@ $(built_odex) : $(DEXPREOPT_ONE_FILE_DEPENDENCY_BUILT_BOOT_PREOPT)
 $(built_odex) : $(DEXPREOPT_ONE_FILE_DEPENDENCY_TOOLS)
 $(built_odex) : $(LOCAL_DEX_PREOPT_IMAGE)
 $(built_odex) : $(common_javalib.jar)
-	@echo "Dexpreopt Jar: $(PRIVATE_MODULE) ($@)"
+	@echo -e ${CL_GRN}"Dexpreopt Jar:"${CL_RST}" $(PRIVATE_MODULE) ($@)"
 	$(call dexpreopt-one-file,$(PRIVATE_DEX_PREOPT_IMAGE),$<,$(PRIVATE_DEX_LOCATION),$@)
 
 $(LOCAL_BUILT_MODULE) : $(common_javalib.jar) | $(ACP)

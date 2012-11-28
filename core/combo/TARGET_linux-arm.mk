@@ -64,16 +64,42 @@ include $(BUILD_SYSTEM)/strip.mk
 
 $(combo_2nd_arch_prefix)TARGET_NO_UNDEFINED_LDFLAGS := -Wl,--no-undefined
 
+ifeq ($(TARGET_USE_O3),true)
 $(combo_2nd_arch_prefix)TARGET_arm_CFLAGS :=    -O2 \
                         -fomit-frame-pointer \
                         -fstrict-aliasing    \
                         -funswitch-loops
+else
+$(combo_2nd_arch_prefix)TARGET_arm_CFLAGS :=    -Os \
+                        -fomit-frame-pointer \
+                        -fstrict-aliasing    \
+                        -fno-zero-initialized-in-bss \
+                        -funswitch-loops \
+                        -fno-tree-vectorize \
+                        -Wno-unused-parameter \
+                        -Wno-unused-value \
+                        -Wno-unused-function
+endif
 
 # Modules can choose to compile some source as thumb.
+ifeq ($(TARGET_USE_O3),true)
 $(combo_2nd_arch_prefix)TARGET_thumb_CFLAGS :=  -mthumb \
-                        -Os \
-                        -fomit-frame-pointer \
-                        -fno-strict-aliasing
+                            -O3 \
+                            -fomit-frame-pointer \
+                            -fno-strict-aliasing \
+                            -Wstrict-aliasing=2 \
+                            -Werror=strict-aliasing \
+                            -fno-tree-vectorize \
+                            -funsafe-math-optimizations \
+                            -Wno-unused-parameter \
+                            -Wno-unused-value \
+                            -Wno-unused-function
+else
+$(combo_2nd_arch_prefix)TARGET_thumb_CFLAGS :=  -mthumb \
+                            -Os \
+                            -fomit-frame-pointer \
+                            -fno-strict-aliasing
+endif
 
 # Set FORCE_ARM_DEBUGGING to "true" in your buildspec.mk
 # or in your environment to force a full arm build, even for
@@ -91,8 +117,16 @@ endif
 
 android_config_h := $(call select-android-config-h,linux-arm)
 
+ifeq ($(TARGET_DISABLE_ARM_PIE),true)
+   PIE_GLOBAL_CFLAGS :=
+   PIE_EXECUTABLE_TRANSFORM := -Wl,-T,$(BUILD_SYSTEM)/armelf.x
+else
+   PIE_GLOBAL_CFLAGS := -fPIE
+   PIE_EXECUTABLE_TRANSFORM := -fPIE -pie
+endif
+
 $(combo_2nd_arch_prefix)TARGET_GLOBAL_CFLAGS += \
-			-msoft-float -fpic -fPIE \
+			-msoft-float -fpic $(PIE_GLOBAL_CFLAGS) \
 			-ffunction-sections \
 			-fdata-sections \
 			-funwind-tables \
@@ -241,7 +275,7 @@ $(hide) $(PRIVATE_CXX) \
 endef
 
 define $(combo_2nd_arch_prefix)transform-o-to-executable-inner
-$(hide) $(PRIVATE_CXX) -nostdlib -Bdynamic -fPIE -pie \
+$(hide) $(PRIVATE_CXX) -nostdlib -Bdynamic $(PIE_EXECUTABLE_TRANSFORM) \
 	-Wl,-dynamic-linker,/system/bin/linker \
 	-Wl,--gc-sections \
 	-Wl,-z,nocopyreloc \
