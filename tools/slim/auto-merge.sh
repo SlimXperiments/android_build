@@ -39,12 +39,12 @@ if [[ "$1" != "--fast" ]]; then
 fi
 export AUTO_TOP=`pwd`
 repo forall '-ec' '
-  if [ "$REPO_REMOTE" != "slimX" ]; then
-    return 0
-  fi
   cd $AUTO_TOP
   if [ $(grep "$REPO_PATH" .auto-merge_ignore) ]; then
     echo "WARNING: ignoreing $REPO_PROJECT"
+    return 0
+  fi
+  if [ "$REPO_REMOTE" != "slimX" ]; then
     return 0
   fi
   cd $REPO_PATH
