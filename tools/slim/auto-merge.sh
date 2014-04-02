@@ -31,12 +31,6 @@ function check() {
   fi
 }
 
-# sync first
-
-if [[ "$1" != "--fast" ]]; then
-  repo sync
-  check "Repo Sync Failed"
-fi
 export AUTO_TOP=`pwd`
 repo forall '-ec' '
   cd $AUTO_TOP
