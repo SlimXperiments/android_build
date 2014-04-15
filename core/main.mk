@@ -143,11 +143,8 @@ endif
 #
 # For Java 1.7, we require OpenJDK on linux and Oracle JDK on Mac OS.
 # For Java 1.6, we require Oracle for all host OSes.
-
-# To use OpenJDK, export EXPERIMENTAL_USE_OPENJDK=1
-# To use Java 1.7, export EXPERIMENTAL_USE_JAVA7=1
 requires_openjdk := false
-ifneq ($(EXPERIMENTAL_USE_OPENJDK),)
+ifneq ($(EXPERIMENTAL_USE_JAVA7),)
 ifeq ($(HOST_OS), linux)
 requires_openjdk := true
 endif
