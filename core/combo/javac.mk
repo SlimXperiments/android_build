@@ -9,7 +9,7 @@
 #   COMMON_JAVAC -- Java compiler command with common arguments
 #
 
-ifeq ($(EXPERIMENTAL_USE_JAVA7),)
+ifneq ($(LEGACY_USE_JAVA6),)
 common_flags := -target 1.5 -Xmaxerrs 9999999
 else
 common_flags := -source 1.7 -target 1.7 -Xmaxerrs 9999999
@@ -27,7 +27,7 @@ ifeq ($(BUILD_OS), windows)
     COMMON_JAVAC := development/host/windows/prebuilt/javawrap.exe -J-Xmx256m \
         $(common_flags)
 else
-    COMMON_JAVAC := $(JAVACC) -J-Xmx768M $(common_flags)
+    COMMON_JAVAC := $(JAVACC) -J-Xmx1024M $(common_flags)
 endif
 
 # Eclipse.

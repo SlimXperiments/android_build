@@ -1156,8 +1156,10 @@ function gdbclient()
                echo ""
        fi
 
+       OUT_SO_SYMBOLS=$OUT_SO_SYMBOLS$USE64BIT
+
        echo >|"$OUT_ROOT/gdbclient.cmds" "set solib-absolute-prefix $OUT_SYMBOLS"
-       echo >>"$OUT_ROOT/gdbclient.cmds" "set solib-search-path $OUT_SO_SYMBOLS$USE64BIT:$OUT_SO_SYMBOLS/hw:$OUT_SO_SYMBOLS/ssl/engines:$OUT_SO_SYMBOLS/drm:$OUT_SO_SYMBOLS/egl:$OUT_SO_SYMBOLS/soundfx"
+       echo >>"$OUT_ROOT/gdbclient.cmds" "set solib-search-path $OUT_SO_SYMBOLS:$OUT_SO_SYMBOLS/hw:$OUT_SO_SYMBOLS/ssl/engines:$OUT_SO_SYMBOLS/drm:$OUT_SO_SYMBOLS/egl:$OUT_SO_SYMBOLS/soundfx"
        echo >>"$OUT_ROOT/gdbclient.cmds" "source $ANDROID_BUILD_TOP/development/scripts/gdb/dalvik.gdb"
        echo >>"$OUT_ROOT/gdbclient.cmds" "target remote $PORT"
        echo >>"$OUT_ROOT/gdbclient.cmds" ""
@@ -1515,7 +1517,8 @@ function godir () {
 # JavaVM.framework/Versions/1.7/ folder.
 function set_java_home() {
     # Clear the existing JAVA_HOME value if we set it ourselves, so that
-    # we can reset it later, depending on the value of EXPERIMENTAL_USE_JAVA7.
+    # we can reset it later, depending on the version of java the build
+    # system needs.
     #
     # If we don't do this, the JAVA_HOME value set by the first call to
     # build/envsetup.sh will persist forever.
@@ -1524,7 +1527,7 @@ function set_java_home() {
     fi
 
     if [ ! "$JAVA_HOME" ]; then
-      if [ ! "$EXPERIMENTAL_USE_JAVA7" ]; then
+      if [ -n "$LEGACY_USE_JAVA6" ]; then
         case `uname -s` in
             Darwin)
                 export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home
