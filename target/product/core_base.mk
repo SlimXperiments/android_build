@@ -61,7 +61,6 @@ PRODUCT_PACKAGES += \
     mdnsd \
     mms-common \
     requestsync \
-    screenrecord \
     telephony-common \
     voip-common
 
