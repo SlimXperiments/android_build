@@ -57,10 +57,10 @@ $(combo_var_prefix)GLOBAL_CFLAGS := -fno-exceptions -Wno-multichar
 ifeq ($(TARGET_USE_03),true)
 $(combo_var_prefix)RELEASE_CFLAGS := -O3 -g -fno-strict-aliasing
 $(combo_var_prefix)GLOBAL_LDFLAGS := -Wl,-O3
-$(combo_var_prefix)GLOBAL_CPPFLAGS :=
+$(combo_var_prefix)GLOBAL_CPPFLAGS := -03 -g -fno-strict-aliasing
 else
 $(combo_var_prefix)RELEASE_CFLAGS := -Os -g -fno-strict-aliasing
-$(combo_var_prefix)GLOBAL_CPPFLAGS :=
+$(combo_var_prefix)GLOBAL_CPPFLAGS := -Os -g -fno-strict-aliasing
 $(combo_var_prefix)GLOBAL_LDFLAGS :=
 endif
 $(combo_var_prefix)GLOBAL_ARFLAGS := crsPD
