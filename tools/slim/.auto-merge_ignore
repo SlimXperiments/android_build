@@ -1,2 +1,5 @@
 bootable/recovery
-vendor/slim
+vendor/slim master
+external/e2fsprogs slim
+external/stlport slim
+system/vold slim
