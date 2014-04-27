@@ -70,7 +70,7 @@ $(tarball): PRIVATE_ROOT_DIR := $(root_dir)
 $(tarball): PRIVATE_NAMED_DIR := $(named_dir)
 
 $(tarball): $(copied_files)
-	@echo "Tarball: $@"
+	@echo -e ${CL_GRN}"Tarball:"${CL_RST}" $@"
 	$(hide) rm -rf $(PRIVATE_NAMED_DIR)
 	$(hide) ( cp -r $(PRIVATE_ROOT_DIR) $(PRIVATE_NAMED_DIR) \
 			&& tar cfz $@ -C $(dir $(PRIVATE_NAMED_DIR)) $(notdir $(PRIVATE_NAMED_DIR)) \

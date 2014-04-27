@@ -59,7 +59,7 @@ LIBART_TARGET_BOOT_OAT_UNSTRIPPED := $(TARGET_OUT_UNSTRIPPED)$(patsubst %.art,%.
 
 # Use dex2oat debug version for better error reporting
 $(DEFAULT_DEX_PREOPT_BUILT_IMAGE): $(LIBART_TARGET_BOOT_DEX_FILES) $(DEX2OATD_DEPENDENCY)
-	@echo "target dex2oat: $@ ($?)"
+	@echo -e ${CL_GRN}"target dex2oat:"${CL_RST}" $@ ($?)"
 	@mkdir -p $(dir $@)
 	@mkdir -p $(dir $(LIBART_TARGET_BOOT_OAT_UNSTRIPPED))
 	$(hide) $(DEX2OATD) --runtime-arg -Xms256m --runtime-arg -Xmx256m --image-classes=$(PRELOADED_CLASSES) \

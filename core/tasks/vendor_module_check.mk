@@ -99,7 +99,7 @@ endif
 _vendor_module_owner_info_txt := $(call intermediates-dir-for,PACKAGING,vendor_owner_info)/vendor_owner_info.txt
 $(_vendor_module_owner_info_txt): PRIVATE_INFO := $(_vendor_module_owner_info)
 $(_vendor_module_owner_info_txt):
-	@echo "Write vendor module owner info $@"
+	@echo -e ${CL_CYN}"Write vendor module owner info"${CL_RST}" $@"
 	@mkdir -p $(dir $@) && rm -f $@
 ifdef _vendor_module_owner_info
 	@for w in $(PRIVATE_INFO); \

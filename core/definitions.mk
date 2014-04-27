@@ -1436,8 +1436,8 @@ endef
 ## Commands for running javac to make .class files
 ###########################################################
 
-#@echo "Source intermediates dir: $(PRIVATE_SOURCE_INTERMEDIATES_DIR)"
-#@echo "Source intermediates: $$(find $(PRIVATE_SOURCE_INTERMEDIATES_DIR) -name '*.java')"
+#@echo -e ${CL_YLW}"Source intermediates dir:"${CL_RST}" $(PRIVATE_SOURCE_INTERMEDIATES_DIR)"
+#@echo -e ${CL_YLW}"Source intermediates:"${CL_RST}" $$(find $(PRIVATE_SOURCE_INTERMEDIATES_DIR) -name '*.java')"
 
 # TODO: Right now we generate the asset resources twice, first as part
 # of generating the Java classes, then at the end when packaging the final
@@ -1934,7 +1934,7 @@ endif
 ## Commands to call Proguard
 ###########################################################
 define transform-jar-to-proguard
-@echo Proguard: $@
+@echo -e ${CL_GRN}"Proguard:"${CL_RST}" $@"
 $(hide) $(PROGUARD) -injars $< -outjars $@ $(PRIVATE_PROGUARD_FLAGS)
 endef
 
@@ -2134,7 +2134,7 @@ endef
 #    $(7)  additional dependencies
 define check-api
 $(TARGET_OUT_COMMON_INTERMEDIATES)/PACKAGING/$(strip $(1))-timestamp: $(2) $(3) $(APICHECK) $(7)
-	@echo "Checking API:" $(1)
+	@echo -e ${CL_GRN}"Checking API:"${CL_RST}" $(1)"
 	$(hide) ( $(APICHECK_COMMAND) $(4) $(2) $(3) || ( $(5) ; exit 38 ) )
 	$(hide) mkdir -p $$(dir $$@)
 	$(hide) touch $$@

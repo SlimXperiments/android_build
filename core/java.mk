@@ -373,7 +373,7 @@ endif
 
 # Keep a copy of the jar just before proguard processing.
 $(full_classes_jar): $(full_classes_emma_jar) | $(ACP)
-	@echo -e ${CL_GRN}"Copying:"${CL_GRN}" $@"
+	@echo -e ${CL_GRN}"Copying:"${CL_RST}" $@"
 	$(hide) $(ACP) -fp $< $@
 
 # Run proguard if necessary, otherwise just copy the file.
@@ -441,7 +441,7 @@ $(full_classes_proguard_jar) : $(full_classes_jar) $(proguard_flag_files) | $(AC
 
 else  # LOCAL_PROGUARD_ENABLED not defined
 $(full_classes_proguard_jar) : $(full_classes_jar)
-	@echo Copying: $@
+	@echo -e ${CL_GRN}"Copying:"${CL_RST}" $@"
 	$(hide) $(ACP) -fp $< $@
 
 endif # LOCAL_PROGUARD_ENABLED defined
