@@ -23,152 +23,76 @@
 #   login <username>
 #   password <password>
 
-# note that this script relies on a new feature to repo that is not yet merged
-# https://gerrit-review.googlesource.com/#/c/56419/
+#
+# This script is a wrapper script for the main merge worker
+# If you intend on bypassing this script, then these functions must be defined first:
+#   _println, check
+# These variables must be assigned
+#   remote, branch, slim_tools
+#
 
-export slim_loc="github"
+#
+# To disable colour, pass --nc
+# To only sync slim, pass --slim
+# To only sync master, pass --master
+# To only push, pass --push
+#
 
-function check() {
-  if [[ $? > 0 ]]; then
-    lineno=$(expr ${BASH_LINENO} - 1)
-    echo "ERROR line $lineno: $1"
-    exit 1
-  fi
+if [[ $(type printf) ]]; then
+    function _println() {
+        printf "%s\n" "$@"
+    }
+else
+    function _println() {
+        echo -e "${*}"
+    }
+fi
+
+function _colour() {
+  export CL_RED=$(tput setaf 1)
+  export CL_GRN=$(tput setaf 2)
+  export CL_ORG=$(tput setaf 3)
+  export CL_BLU=$(tput setaf 4)
+  export CL_MAG=$(tput setaf 5)
+  export CL_CYN=$(tput setaf 6)
+  export CL_RST=$(tput sgr0)
 }
 
-export AUTO_TOP=`pwd`
-
-if [[ $* == *--slim* ]]; then
-if [[ $* != *--push* ]]; then
-repo forall '-x' '/bin/bash' '-ec' '
-  if [ "$REPO_REMOTE" != "slimX" ]; then
-    exit 0
-  fi
-  cd $AUTO_TOP
-  blah=($(grep "$REPO_PATH" .auto-merge_ignore))
-  if [ -n "$blah" ]; then
-    bloo=${blah[1]}
-    if [ "$bloo" == "slim" ] || [ "$bloo" == "" ]; then
-      echo "WARNING: ignoreing $REPO_PROJECT"
-      exit 0
+function check() {
+    if [[ $? -gt 0 ]]; then
+        lineno=$((BASH_LINENO - 1))
+        _println "${CL_RED}ERROR line ${lineno}:${CL_RST} $1"
+        exit 1
     fi
-  fi
-  cd $REPO_PATH
-  echo "in $REPO_PATH"
-  git branch -a | grep "$slim_loc/kk4\.4" > /dev/null
-  if [ $? -gt 0 ]; then
-    echo "ERROR: $REPO_PROJECT: does not have $slim_loc/kk4.4"
-    exit 1
-  fi
-  git fetch $slim_loc
-  if [ $? -gt 0 ]; then
-    echo "ERROR: $REPO_PROJECT: failed to fetch $slim_loc/kk4.4"
-    exit 1
-  fi
-  git branch -a | grep "slimX/slim-master" > /dev/null
-  if [ $? -gt 0 ]; then
-    echo "ERROR: $REPO_PROJECT: does not have slimX/slim-master"
-    exit 1
-  fi
-  git checkout slim-master
-  if [ $? -gt 0 ]; then
-    echo "ERROR: $REPO_PROJECT: failed to checkout slimX/slim-master"
-    exit 1
-  fi
-  git pull slimX slim-master
-  if [ $? -gt 0 ]; then
-    echo "ERROR: $REPO_PROJECT: failed to pull slimX/slim-master"
-    exit 1
-  fi
-  git merge $slim_loc/kk4.4 -m "auto-merger: merge in from slim/kk4.4"
-  if [ $? -gt 0 ]; then
-    echo "ERROR: $REPO_PROJECT: failed to merge in slim/4.4"
-    exit 1
-  fi
-  echo "finished $REPO_PROJECT"
-'
+}
 
-check "auto-merge slim failed, check log"
+[[ "$@" != *--nc* ]] && _colour
 
+[[ -z ${T} ]] && export T=${ANDROID_BUILD_TOP}
+[[ -z ${T} ]] && [[ -f "build/envsetup.sh" ]] && export T=$(pwd)
+[[ -z ${T} ]] && [[ -f "../../envsetup.sh" ]] && export T=$(readlink -f "$(pwd)/../../../")
+if [[ -z ${T} ]]; then
+    _println "${CL_RED}ERROR:${CL_RST} please run . build/envsetup.sh"
+    exit 1
 fi
+export slim_tools="${T}/build/tools/slim"
+export -f _println
+export -f check
+
+
+export remote="slimX"
+export branch="slim-master"
+if [[ "$@" == *--push* ]]; then
+    args="${args} --push"
+fi
+if [[ "$@" == *--slim* ]]; then
+    args="${args} --slim"
+fi
+if [[ "$@" == *--master* ]]; then
+    args="${args} --master"
 fi
 
-if [[ $* != *--slim* ]]; then
-if [[ $* != *--push* ]]; then
-repo forall '-x' '/bin/bash' '-ec' '
-  if [ "$REPO_REMOTE" != "slimX" ]; then
-    exit 0
-  fi
-  cd $AUTO_TOP
-  blah=($(grep "$REPO_PATH" .auto-merge_ignore))
-  if [ -n "$blah" ]; then
-    bloo=${blah[1]}
-    if [ "$bloo" == "master" ] || [ "$bloo" == "" ]; then
-      echo "WARNING: ignoreing $REPO_PROJECT"
-      exit 0
-    fi
-  fi
-  cd $REPO_PATH
-  echo "in $REPO_PATH"
-  git branch -a | grep "aosp/master" > /dev/null
-  if [ $? -gt 0 ]; then
-    echo "ERROR: $REPO_PROJECT: does not have aosp/master"
-    exit 1
-  fi
-  git fetch aosp
-  if [ $? -gt 0 ]; then
-    echo "ERROR: $REPO_PROJECT: failed to fetch aosp/master"
-    exit 1
-  fi
-  git branch -a | grep "slimX/slim-master" > /dev/null
-  if [ $? -gt 0 ]; then
-    echo "ERROR: $REPO_PROJECT: does not have slimX/slim-master"
-    exit 1
-  fi
-  git checkout slim-master
-  if [ $? -gt 0 ]; then
-    echo "ERROR: $REPO_PROJECT: failed to checkout slimX/slim-master"
-    exit 1
-  fi
-  git pull slimX slim-master
-  if [ $? -gt 0 ]; then
-    echo "ERROR: $REPO_PROJECT: failed to pull slimX/slim-master"
-    exit 1
-  fi
-  git merge aosp/master -m "auto-merger: merge in from aosp/master"
-  if [ $? -gt 0 ]; then
-    echo "ERROR: $REPO_PROJECT: failed to merge in aosp/master"
-    exit 1
-  fi
-  echo "finished $REPO_PROJECT"
-'
+repo forall -ec "bash '${slim_tools}/auto-merge-worker.sh' '${args}'"
+check "process failed, check log"
 
-check "auto-merge master failed, check log"
-
-fi
-fi
-
-repo forall '-x' '/bin/bash' '-ec' '
-  if [ "$REPO_REMOTE" != "slimX" ]; then
-    exit 0
-  fi
-  cd $AUTO_TOP
-  blah=$(grep "$REPO_PATH" .auto-merge_ignore)
-  if [ -n "${blah}" ]; then
-    echo "WARNING: ignoreing $REPO_PROJECT"
-    exit 0
-  fi
-  cd $REPO_PATH
-  echo "in $REPO_PATH"
-  git push -u slimX slim-master
-  if [ $? -gt 0 ]; then
-    echo "ERROR: $REPO_PROJECT: failed to push to slimX/slim-master"
-    exit 1
-  fi
-  echo "pushed $REPO_PROJECT"
-'
-
-check "auto-merge push failed, check log"
-echo "all finished"
-  
-  
+_println "Process finished successfully"

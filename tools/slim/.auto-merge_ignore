@@ -3,3 +3,5 @@ vendor/slim master
 external/e2fsprogs slim
 external/stlport slim
 system/vold slim
+external/chromium_org/third_party/libvpx slim
+external/chromium_org/third_party/webrtc slim
