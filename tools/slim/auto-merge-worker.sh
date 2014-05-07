@@ -65,8 +65,8 @@ function fetch() {
 function push() {
     [[ "${REPO_REMOTE}" != "${remote}" ]] && exit 0
 
-    ignore=$(grep "^${REPO_PATH}" "${slim_tools}/.auto-merge_ignore")
-    [[ -n "${ignore}" ]] && exit 0
+    ignore=($(grep "^${REPO_PATH}" "${slim_tools}/.auto-merge_ignore"))
+    [[ -n "${ignore[0]}" ]] && [[ -z "${ignore[1]}" ]] && exit 0
 
     _println "${CL_CYN}pushing${CL_RST} ${repo_path}"
 
