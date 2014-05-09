@@ -402,6 +402,10 @@ ifneq ($(filter ro.setupwizard.mode=ENABLED, $(call collapse-pairs, $(ADDITIONAL
           $(call collapse-pairs, $(ADDITIONAL_BUILD_PROPERTIES))) \
           ro.setupwizard.mode=OPTIONAL
 endif
+# Don't even verify the image on eng builds to speed startup
+ADDITIONAL_BUILD_PROPERTIES += dalvik.vm.image-dex2oat-flags=--compiler-filter=verify-none
+# Don't compile apps on eng builds to speed startup
+ADDITIONAL_BUILD_PROPERTIES += dalvik.vm.dex2oat-flags=--compiler-filter=interpret-only
 endif
 
 ## sdk ##
@@ -1009,7 +1013,7 @@ $(call dist-for-goals,sdk win_sdk, \
 # umbrella targets to assit engineers in verifying builds
 .PHONY: java native target host java-host java-target native-host native-target \
         java-host-tests java-target-tests native-host-tests native-target-tests \
-        java-tests native-tests host-tests target-tests
+        java-tests native-tests host-tests target-tests tests
 # some synonyms
 .PHONY: host-java target-java host-native target-native \
         target-java-tests target-native-tests
@@ -1019,6 +1023,7 @@ host-native : native-host
 target-native : native-target
 target-java-tests : java-target-tests
 target-native-tests : native-target-tests
+tests : host-tests target-tests
 
 
 .PHONY: lintall
