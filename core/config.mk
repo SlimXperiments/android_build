@@ -366,7 +366,7 @@ endif
 # ---------------------------------------------------------------
 # Generic tools.
 
-LEX := prebuilts/misc/$(BUILD_OS)-$(BUILD_ARCH)/flex/flex-2.5.39
+LEX := prebuilts/misc/$(BUILD_OS)-$(HOST_PREBUILT_ARCH)/flex/flex-2.5.39
 # The default PKGDATADIR built in the prebuilt bison is a relative path
 # external/bison/data.
 # To run bison from elsewhere you need to set up enviromental variable
@@ -532,6 +532,8 @@ endif
 ifeq ($(TARGET_DEFAULT_JAVA_LIBRARIES),)
   TARGET_DEFAULT_JAVA_LIBRARIES := core core-junit ext framework framework2
 endif
+
+TARGET_CPU_SMP ?= true
 
 # Flags for DEX2OAT
 DEX2OAT_TARGET_ARCH := $(TARGET_ARCH)
