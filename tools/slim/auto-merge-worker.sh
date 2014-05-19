@@ -68,6 +68,8 @@ function push() {
     ignore=($(grep "^${REPO_PATH}" "${slim_tools}/.auto-merge_ignore"))
     [[ -n "${ignore[0]}" ]] && [[ -z "${ignore[1]}" ]] && exit 0
 
+    [[ $(git log ${branch}  ^${remote}/${branch}) ]] || exit 0
+
     _println "${CL_CYN}pushing${CL_RST} ${repo_path}"
 
     git push -u "${remote}" "${branch}"
