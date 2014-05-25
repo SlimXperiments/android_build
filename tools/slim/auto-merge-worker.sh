@@ -39,8 +39,6 @@ function fetch() {
         fi
     fi
 
-    _println "${CL_CYN}merging ${CL_RST} ${repo_path}"
-
     git branch -a | grep "${2}/${3}" > /dev/null
     check "${repo_project}: does not have ${2}/${3}"
     
@@ -50,6 +48,10 @@ function fetch() {
     git fetch "${2}"
     check "${repo_project}: failed to fetch ${2}"
     
+    [[ $(git log ${2}/${3} ^${branch}) ]] || exit 0
+
+    _println "${CL_CYN}merging ${CL_RST} ${repo_path}"
+
     git checkout "${branch}"
     check "${repo_project}: failed to checkout ${remote}/${branch}"
     
