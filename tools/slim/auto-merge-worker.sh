@@ -23,14 +23,14 @@
 #   remote, branch, slim_tools
 #
 
+[[ "${REPO_REMOTE}" != "${remote}" ]] && exit 0
+
 function colourise() {
     export repo_path="${CL_BLU}${REPO_PATH}${CL_RST}"
     export repo_project="${CL_BLU}${REPO_PROJECT}${CL_RST}"
 }
 
 function fetch() {
-    [[ "${REPO_REMOTE}" != "${remote}" ]] && exit 0
-
     ignore=($(grep "^${REPO_PATH}" "${slim_tools}/.auto-merge_ignore"))
     if [ -n "${ignore[*]}" ]; then
         if [[ "${ignore[1]}" == "${1}" ||  "${ignore[1]}" == "" ]]; then
@@ -65,8 +65,6 @@ function fetch() {
 }
 
 function push() {
-    [[ "${REPO_REMOTE}" != "${remote}" ]] && exit 0
-
     ignore=($(grep "^${REPO_PATH}" "${slim_tools}/.auto-merge_ignore"))
     [[ -n "${ignore[0]}" ]] && [[ -z "${ignore[1]}" ]] && exit 0
 
