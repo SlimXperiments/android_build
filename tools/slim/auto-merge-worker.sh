@@ -18,7 +18,7 @@
 # note that this script relies on a wrapper, do not run this directly
 #
 # Required functions:
-#   _println, check
+#   _println, _check
 # Required Variables:
 #   remote, branch, slim_tools
 #
@@ -40,26 +40,26 @@ function fetch() {
     fi
 
     git branch -a | grep "${2}/${3}" > /dev/null
-    check "${repo_project}: does not have ${2}/${3}"
+    _check "${repo_project}: does not have ${2}/${3}"
     
     git branch -a | grep "${remote}/${branch}" > /dev/null
-    check "${repo_project}: does not have ${remote}/${branch}"
+    _check "${repo_project}: does not have ${remote}/${branch}"
 
     git fetch "${2}"
-    check "${repo_project}: failed to fetch ${2}"
+    _check "${repo_project}: failed to fetch ${2}"
     
     [[ $(git log ${2}/${3} ^${branch}) ]] || exit 0
 
     _println "${CL_CYN}merging ${CL_RST} ${repo_path}"
 
     git checkout "${branch}"
-    check "${repo_project}: failed to checkout ${remote}/${branch}"
+    _check "${repo_project}: failed to checkout ${remote}/${branch}"
     
     git pull "${remote}" "${branch}"
-    check "${repo_project}: failed to pull ${remote}/${branch}"
+    _check "${repo_project}: failed to pull ${remote}/${branch}"
     
     git merge "${2}/${3}" -m "auto-merger: merge in from ${2}/${3}"
-    check "${repo_project}: failed to merge in ${2}/${3}"
+    _check "${repo_project}: failed to merge in ${2}/${3}"
     
     _println "${CL_GRN}merged${CL_RST} ${repo_project}"
 }
@@ -73,7 +73,7 @@ function push() {
     _println "${CL_CYN}pushing${CL_RST} ${repo_path}"
 
     git push -u "${remote}" "${branch}"
-    check "${repo_project}: failed to push to ${remote}/${branch}"
+    _check "${repo_project}: failed to push to ${remote}/${branch}"
     
     _println "${CL_GRN}pushed${CL_RST} ${repo_project}"
 }
@@ -81,15 +81,15 @@ function push() {
 colourise  # does nothing if colours are not defined
 if [[ "$@" == *--slim* ]]; then
     fetch "slim" "github" "kk4.4"
-    check "Slim: could not finish"
+    _check "Slim: could not finish"
 fi
 if [[ "$@" == *--master* ]]; then
     fetch "master" "aosp" "master"
-    check "Master: could not finish"
+    _check "Master: could not finish"
 fi
 if [[ "$@" == *--push* ]]; then
     push
-    check "push failed, check log"
+    _check "push failed, check log"
 fi
 if [[ "$@" == "" ]]; then
     _println "${CL_RED}WARNING:${CL_RST} Nothing to do. Bailing"

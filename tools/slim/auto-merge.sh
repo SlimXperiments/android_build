@@ -26,7 +26,7 @@
 #
 # This script is a wrapper script for the main merge worker
 # If you intend on bypassing this script, then these functions must be defined first:
-#   _println, check
+#   _println, _check
 # These variables must be assigned
 #   remote, branch, slim_tools
 #
@@ -38,61 +38,24 @@
 # To only push, pass --push
 #
 
-if [[ $(type printf) ]]; then
-    function _println() {
-        printf "%s\n" "$@"
-    }
-else
-    function _println() {
-        echo -e "${*}"
-    }
-fi
-
-function _colour() {
-  export CL_RED=$(tput setaf 1)
-  export CL_GRN=$(tput setaf 2)
-  export CL_ORG=$(tput setaf 3)
-  export CL_BLU=$(tput setaf 4)
-  export CL_MAG=$(tput setaf 5)
-  export CL_CYN=$(tput setaf 6)
-  export CL_RST=$(tput sgr0)
-}
-
-function check() {
-    if [[ $? -gt 0 ]]; then
-        lineno=$((BASH_LINENO - 1))
-        _println "${CL_RED}ERROR line ${lineno}:${CL_RST} $1"
-        exit 1
-    fi
-}
-
-[[ "$@" != *--nc* ]] && _colour
-
-[[ -z ${T} ]] && export T=${ANDROID_BUILD_TOP}
-[[ -z ${T} ]] && [[ -f "build/envsetup.sh" ]] && export T=$(pwd)
-[[ -z ${T} ]] && [[ -f "../../envsetup.sh" ]] && export T=$(readlink -f "$(pwd)/../../../")
+[[ -z ${T} ]] && T=${ANDROID_BUILD_TOP}
+[[ -z ${T} ]] && [[ -f "build/envsetup.sh" ]] && T=$(pwd)
+[[ -z ${T} ]] && [[ -f "../../envsetup.sh" ]] && T=$(readlink -f "$(pwd)/../../../")
 if [[ -z ${T} ]]; then
-    _println "${CL_RED}ERROR:${CL_RST} please run . build/envsetup.sh"
+    echo "ERROR: please run . build/envsetup.sh"
     exit 1
 fi
 export slim_tools="${T}/build/tools/slim"
-export -f _println
-export -f check
 
+. "${slim_tools}/slim_env.sh"
+
+[[ "$@" != *--nc* ]] && _colour
 
 export remote="slimX"
 export branch="slim-master"
-if [[ "$@" == *--push* ]]; then
-    args="${args} --push"
-fi
-if [[ "$@" == *--slim* ]]; then
-    args="${args} --slim"
-fi
-if [[ "$@" == *--master* ]]; then
-    args="${args} --master"
-fi
+_println "$@"
 
-repo forall -ec "bash '${slim_tools}/auto-merge-worker.sh' '${args}'"
-check "process failed, check log"
+repo forall -ec "bash '${slim_tools}/auto-merge-worker.sh' '${@}'"
+_check "process failed, check log"
 
 _println "Process finished successfully"
